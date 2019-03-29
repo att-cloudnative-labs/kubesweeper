@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"log"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"strconv"
 )
 
 type bin int
@@ -33,39 +32,47 @@ func main() {
 
 		restartThreshold := int32(100)
 
-		for i := 0; i < len(pods.Items); i++ {
-			for j := 0; j < len(pods.Items[i].Status.ContainerStatuses); j++ {
-				if pods.Items[i].Status.ContainerStatuses[j].State.Waiting != nil {
-					if pods.Items[i].Status.ContainerStatuses[j].State.Waiting.Reason != "" {
-						if pods.Items[i].Status.ContainerStatuses[j].State.Waiting.Reason == "CrashLoopBackOff" {
-							if pods.Items[i].Status.ContainerStatuses[j].RestartCount > restartThreshold {
-								fmt.Println(pods.Items[i].Namespace + "/" + pods.Items[i].Name + " has " +
-									strconv.Itoa(int(pods.Items[i].Status.ContainerStatuses[j].RestartCount)) + " restarts, " +
-									"which is over the " + strconv.Itoa(int(restartThreshold)) + " restart limit.\n")
-								rs, _ := clientset.AppsV1().ReplicaSets(pods.Items[i].Namespace).Get(pods.Items[i].OwnerReferences[0].Name, metav1.GetOptions{})
-								if rs != nil {
-									if rs.OwnerReferences != nil {
-										deploy, _ := clientset.AppsV1().Deployments(pods.Items[i].Namespace).Get(rs.OwnerReferences[0].Name, metav1.GetOptions{})
-										if deploy != nil {
-											if deploy.Name != "" {
-												policy := metav1.DeletePropagationForeground
-												gracePeriodSeconds := int64(0)
-												fmt.Println("About to delete " + pods.Items[i].Namespace + "/" +
-													deploy.Name + " and its associated resources.\n")
-												err := clientset.AppsV1().Deployments(pods.Items[i].Namespace).Delete(rs.OwnerReferences[0].Name, &metav1.DeleteOptions{PropagationPolicy: &policy, GracePeriodSeconds: &gracePeriodSeconds})
-												if err != nil {
-													fmt.Println(pods.Items[i].Namespace + "/" + deploy.Name + "error: \n")
-												}
-											} else {
-												fmt.Printf("No deployment name!\n")
-											}
-										}
-									} else {
-										fmt.Printf("No replica set owner reference!\n")
+		for _, item := range pods.Items {
+			for _, status := range item.Status.ContainerStatuses {
+				waiting := status.State.Waiting
+
+				if waiting != nil {
+					reason := waiting.Reason
+					if reason == "CrashLoopBackOff" && status.RestartCount > restartThreshold {
+						fmt.Println(item.Namespace + "/" + item.Name + " has " +
+							strconv.Itoa(int(status.RestartCount)) + " restarts, " +
+							"which is over the " + strconv.Itoa(int(restartThreshold)) + " restart limit.\n")
+						rs, err := clientset.AppsV1().ReplicaSets(item.Namespace).Get(item.OwnerReferences[0].Name, metav1.GetOptions{})
+						// could handle error here instead, like:
+						if err != nil {
+							fmt.Printf("Error retrieving ReplicaSets. Error: %s", err.Error())
+							continue
+						}
+
+						if rs.OwnerReferences != nil {
+							deploy, err := clientset.AppsV1().Deployments(item.Namespace).Get(rs.OwnerReferences[0].Name, metav1.GetOptions{})
+							if err != nil {
+								fmt.Printf("Error retrieving ReplicaSets. Error: %s", err.Error())
+								continue
+							}
+							if deploy != nil {
+								if deploy.Name != "" {
+									policy := metav1.DeletePropagationForeground
+									gracePeriodSeconds := int64(0)
+									fmt.Printf("About to delete %s/%s and its associated resources.\n", item.Namespace, deploy.Name)
+									err := clientset.AppsV1().Deployments(item.Namespace).Delete(rs.OwnerReferences[0].Name, &metav1.DeleteOptions{PropagationPolicy: &policy, GracePeriodSeconds: &gracePeriodSeconds})
+									if err != nil {
+										fmt.Printf("%s/%s, Error: %s \n", item.Namespace, deploy.Name, err.Error())
+										continue
 									}
+								} else {
+									fmt.Printf("No deployment name!\n")
 								}
 							}
+						} else {
+							fmt.Printf("No replica set owner reference!\n")
 						}
+
 					}
 				}
 			}
