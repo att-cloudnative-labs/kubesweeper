@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"strconv"
 )
 
 type bin int
@@ -43,7 +44,6 @@ func main() {
 							strconv.Itoa(int(status.RestartCount)) + " restarts, " +
 							"which is over the " + strconv.Itoa(int(restartThreshold)) + " restart limit.\n")
 						rs, err := clientset.AppsV1().ReplicaSets(item.Namespace).Get(item.OwnerReferences[0].Name, metav1.GetOptions{})
-						// could handle error here instead, like:
 						if err != nil {
 							fmt.Printf("Error retrieving ReplicaSets. Error: %s", err.Error())
 							continue
@@ -52,7 +52,7 @@ func main() {
 						if rs.OwnerReferences != nil {
 							deploy, err := clientset.AppsV1().Deployments(item.Namespace).Get(rs.OwnerReferences[0].Name, metav1.GetOptions{})
 							if err != nil {
-								fmt.Printf("Error retrieving ReplicaSets. Error: %s", err.Error())
+								fmt.Printf("Error retrieving Deployments. Error: %s", err.Error())
 								continue
 							}
 							if deploy != nil {
