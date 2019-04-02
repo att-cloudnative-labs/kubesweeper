@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"strconv"
 )
 
 type bin int
@@ -14,7 +15,20 @@ func (b bin) String() string {
 	return fmt.Sprintf("%b", b)
 }
 
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
+	NUMBER_RESTARTS := 100
+
+	waitingReasons := []string{"CrashLoopBackOff", "ErrImagePull", "Completed", "Failed"}
+
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
@@ -24,36 +38,38 @@ func main() {
 		panic(err.Error())
 	}
 
+	fmt.Println("Beginning the crawl.")
+
 	for {
 		pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{})
 		if err != nil {
 			panic(err.Error())
 		}
 
-		restartThreshold := int32(100)
+		restartThreshold := int32(NUMBER_RESTARTS)
 
 		for _, item := range pods.Items {
+		StatusLoop:
 			for _, status := range item.Status.ContainerStatuses {
 				waiting := status.State.Waiting
 
 				if waiting != nil {
 					reason := waiting.Reason
-					if reason == "CrashLoopBackOff" && status.RestartCount > restartThreshold {
+					if stringInSlice(reason, waitingReasons) && status.RestartCount > restartThreshold {
 						fmt.Println(item.Namespace + "/" + item.Name + " has " +
 							strconv.Itoa(int(status.RestartCount)) + " restarts, " +
-							"which is over the " + strconv.Itoa(int(restartThreshold)) + " restart limit.\n")
+							"which is over the " + strconv.Itoa(int(restartThreshold)) + " restart limit.")
 						rs, err := clientset.AppsV1().ReplicaSets(item.Namespace).Get(item.OwnerReferences[0].Name, metav1.GetOptions{})
-						// could handle error here instead, like:
 						if err != nil {
-							fmt.Printf("Error retrieving ReplicaSets. Error: %s", err.Error())
-							continue
+							fmt.Printf("Error retrieving ReplicaSets. Error: %s\n", err.Error())
+							continue StatusLoop
 						}
 
 						if rs.OwnerReferences != nil {
 							deploy, err := clientset.AppsV1().Deployments(item.Namespace).Get(rs.OwnerReferences[0].Name, metav1.GetOptions{})
 							if err != nil {
-								fmt.Printf("Error retrieving ReplicaSets. Error: %s", err.Error())
-								continue
+								fmt.Printf("Error retrieving Deployments. Error: %s\n", err.Error())
+								continue StatusLoop
 							}
 							if deploy != nil {
 								if deploy.Name != "" {
@@ -63,16 +79,15 @@ func main() {
 									err := clientset.AppsV1().Deployments(item.Namespace).Delete(rs.OwnerReferences[0].Name, &metav1.DeleteOptions{PropagationPolicy: &policy, GracePeriodSeconds: &gracePeriodSeconds})
 									if err != nil {
 										fmt.Printf("%s/%s, Error: %s \n", item.Namespace, deploy.Name, err.Error())
-										continue
+										continue StatusLoop
 									}
 								} else {
-									fmt.Printf("No deployment name!\n")
+									fmt.Println("No deployment name.")
 								}
 							}
 						} else {
-							fmt.Printf("No replica set owner reference!\n")
+							fmt.Println("No replica set owner reference.")
 						}
-
 					}
 				}
 			}
