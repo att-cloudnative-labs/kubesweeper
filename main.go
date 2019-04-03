@@ -56,9 +56,9 @@ func main() {
 				if waiting != nil {
 					reason := waiting.Reason
 					if stringInSlice(reason, waitingReasons) && status.RestartCount > restartThreshold {
-						fmt.Println(item.Namespace + "/" + item.Name + " has " +
-							strconv.Itoa(int(status.RestartCount)) + " restarts, " +
-							"which is over the " + strconv.Itoa(int(restartThreshold)) + " restart limit.")
+						fmt.Printf("%s / %s has %s restarts, which is over the %s restart limit.", item.Namespace,
+							item.Name, strconv.Itoa(int(status.RestartCount)), strconv.Itoa(int(restartThreshold)))
+
 						rs, err := clientset.AppsV1().ReplicaSets(item.Namespace).Get(item.OwnerReferences[0].Name, metav1.GetOptions{})
 						if err != nil {
 							fmt.Printf("Error retrieving ReplicaSets. Error: %s\n", err.Error())
