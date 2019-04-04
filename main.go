@@ -16,32 +16,16 @@ func (b bin) String() string {
 	return fmt.Sprintf("%b", b)
 }
 
-type DeploymentAction interface {
-	Delete(deployment *v1.Deployment, restarts int) (bool, error) // change the signature if you want/need to. This is an illustration
-}
+type DeleteFunc func(deployment *v1.Deployment, restarts int) (bool, error)
 
-/*
- * The implementation for most cases
- */
-type GenericAction struct {
-	Reason string
-}
-
-/*
- * The implementation for the crash loop case
- */
-type CrashLoopAction struct {
-	Reason string
-}
-
-func (w GenericAction) Delete(deployment *v1.Deployment, restarts int) (bool, error) {
-	// do your generic logic in here
+func DeleteCrash(deployment *v1.Deployment, restarts int) (bool, error) {
+	// do your crash loop logic in here
 
 	return true, nil
 }
 
-func (w CrashLoopAction) Delete(deployment *v1.Deployment, restarts int) (bool, error) {
-	// do your crash loop logic in here
+func DeleteGeneric(deployment *v1.Deployment, restarts int) (bool, error) {
+	// do your generic logic in here
 
 	return true, nil
 }
@@ -55,12 +39,12 @@ func main() {
 	var imagePullBackOff = "ImagePullBackOff"
 	var crashLoopBackOff = "CrashLoopBackOff"
 
-	waitingReasons := map[string]DeploymentAction{
-		errImagePull:     GenericAction{Reason: errImagePull},
-		completed:        GenericAction{Reason: completed},
-		failed:           GenericAction{Reason: failed},
-		imagePullBackOff: GenericAction{Reason: imagePullBackOff},
-		crashLoopBackOff: CrashLoopAction{Reason: crashLoopBackOff}, // notice the different interface implementation, so the function will be different
+	waitingReasons := map[string]DeleteFunc{
+		errImagePull:     DeleteGeneric,
+		completed:        DeleteGeneric,
+		failed:           DeleteGeneric,
+		imagePullBackOff: DeleteGeneric,
+		crashLoopBackOff: DeleteCrash,
 	}
 
 	config, err := rest.InClusterConfig()
@@ -89,7 +73,7 @@ func main() {
 				if waiting != nil {
 					reason := waiting.Reason
 
-					action, ok := waitingReasons[reason]
+					deleteFunc, ok := waitingReasons[reason]
 					if ok {
 
 						rs, err := clientset.AppsV1().ReplicaSets(item.Namespace).Get(item.OwnerReferences[0].Name, metav1.GetOptions{})
@@ -106,7 +90,7 @@ func main() {
 							}
 
 							// this is where the new interface method(s) come in
-							_, err = action.Delete(deploy, NUMBER_RESTARTS)
+							_, err = deleteFunc(deploy, NUMBER_RESTARTS)
 
 							if err != nil {
 								// do even more error handling if you don't change the return signature
