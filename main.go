@@ -15,19 +15,15 @@ func (b bin) String() string {
 	return fmt.Sprintf("%b", b)
 }
 
-func stringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
 func main() {
 	NUMBER_RESTARTS := 100
 
-	waitingReasons := []string{"CrashLoopBackOff", "ErrImagePull", "Completed", "Failed"}
+	waitingReasons := map[string]struct{}{
+		"ErrImagePull": 	{},
+		"Completed": 		{},
+		"Failed": 			{},
+		"ImagePullBackOff": {},
+	}
 
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -49,15 +45,20 @@ func main() {
 		restartThreshold := int32(NUMBER_RESTARTS)
 
 		for _, item := range pods.Items {
-		StatusLoop:
+			StatusLoop:
 			for _, status := range item.Status.ContainerStatuses {
 				waiting := status.State.Waiting
-
 				if waiting != nil {
 					reason := waiting.Reason
-					if stringInSlice(reason, waitingReasons) && status.RestartCount > restartThreshold {
-						fmt.Printf("%s / %s has %s restarts, which is over the %s restart limit.", item.Namespace,
-							item.Name, strconv.Itoa(int(status.RestartCount)), strconv.Itoa(int(restartThreshold)))
+					_, reasonInWaitingReasons := waitingReasons[reason]
+					if reasonInWaitingReasons || (reason == "CrashLoopBackOff" && status.RestartCount > restartThreshold) {
+						if reason == "CrashLoopBackOff" {
+							fmt.Printf("%s / %s has %s restarts, which is over the %s restart limit.", item.Namespace,
+								item.Name, strconv.Itoa(int(status.RestartCount)), strconv.Itoa(int(restartThreshold)))
+						} else if reasonInWaitingReasons {
+							fmt.Printf("%s / %s has a status of %s, which is configured to be deleted.", item.Namespace,
+								item.Name, reason)
+						}
 
 						rs, err := clientset.AppsV1().ReplicaSets(item.Namespace).Get(item.OwnerReferences[0].Name, metav1.GetOptions{})
 						if err != nil {
