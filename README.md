@@ -26,3 +26,6 @@
 		<img src="https://img.shields.io/github/forks/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg?style=social">
 	</a>	
 </p>
+
+#### Note
+The deployment crawler is meant to be run in-cluster only.
