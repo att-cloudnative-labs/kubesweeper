@@ -1,4 +1,5 @@
 # kythera-kubernetes-deployment-crawler
+> Golang program that removes unnecessary Kubernetes resources based on a configurable pod restart threshold.
 
 <p align="center">
     <a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/graphs/contributors" alt="Contributors">
@@ -29,3 +30,21 @@
 
 #### Note
 The deployment crawler is meant to be run in-cluster only.
+
+## Usage example
+
+
+
+## Installation
+
+1. Build the docker image.
+
+```sh
+docker build -t kubecrawler .
+```
+
+## Release History
+
+
+
+
