@@ -1,0 +1,13 @@
+kleaner:
+  reasons:
+    - reason: "CrashLoopBackOff"
+      restartThreshold: 100
+      deleteFuncString: "DeleteCrash"
+    - reason: "ImagePullBackOff"
+      deleteFuncString: "DeleteGeneric"
+    - reason: "ErrImagePull"
+      deleteFuncString: "DeleteGeneric"
+    - reason: "Completed"
+      deleteFuncString: "DeleteGeneric"
+    - reason: "Failed"
+      deleteFuncString: "DeleteGeneric"
