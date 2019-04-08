@@ -59,7 +59,7 @@ Under the ```configs``` folder, the ```config.yaml``` has the following default 
   * Failed
 * Pod restart threshold
   * 144
-    * If the pod re-start threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then Kubernetes Deployment Crawler will delete the associated resources
+    * If the pod restart threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then Kubernetes Deployment Crawler will delete the associated resources
 
 
 ## Contributing
