@@ -85,7 +85,7 @@ func main() {
 				if waiting != nil {
 					reason := waiting.Reason
 					if crawlerConfigDetails, ok := waitingReasons[reason]; ok {
-						fmt.Printf("Waiting reason match: %s/%s has a waiting reason of: %s", pod.Namespace,
+						fmt.Printf("Waiting reason match. %s/%s has a waiting reason of: %s", pod.Namespace,
 							pod.OwnerReferences[0].Name, reason)
 						rs, err := clientset.AppsV1().ReplicaSets(pod.Namespace).Get(pod.OwnerReferences[0].Name, metav1.GetOptions{})
 						if err != nil {
