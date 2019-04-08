@@ -1,7 +1,9 @@
 # Kythera Kubernetes Deployment Crawler 
 
-Automatically crawls through resources in a Kubernetes cluster and acts according to certain conditions. As of now, Kubernetes
-Deployment Crawler will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
+Automatically crawls through resources in a Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubernetes Deployment Crawler will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
+
+If your Kubernetes clusters are filling up with non-Running pods, then the Kubernetes Deployment Crawler's automatic deletion
+can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources, such as generating reports per namespace without actually deleting. 
 
 <p align="center">
     <a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/graphs/contributors" alt="Contributors">
@@ -37,21 +39,28 @@ Deployment Crawler will delete deployments and their associated resources if the
   </a>	
 </p>
 
-#### Note
-The Kubernetes Deployment Crawler is meant to be run in-cluster only.
-
 ## Installation
 
 ```bash
 $ docker build -t kubecrawler .
 ```
 
-Then, install the image in your Kubernetes cluster as a Kubernetes CronJob or as a Knative Cron Job Source.
+Deploy the image in your Kubernetes cluster as a Kubernetes Deployment or as a Knative Cron Job Source.
 
-## Usage example
+## Configuration Defaults
 
-If your Kubernetes clusters are filling up with non-Running pods, then the Kubernetes Deployment Crawler's automatic deletion
-can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources. 
+Under the ```configs``` folder, the ```config.yaml``` has the following default configurations:
+
+* Pod waiting reasons
+  * CrashLoopBackOff
+  * ImagePullBackOff
+  * ErrImagePull
+  * Completed
+  * Failed
+* Pod restart threshold
+  * 144
+    * If the pod re-start threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then Kubernetes Deployment Crawler will delete the associated resources
+
 
 ## Contributing
 
@@ -64,17 +73,17 @@ can assist. Future iterations of this project can involve other actions based on
 ## Additional info
 
 <p align="center">
-
-![kythera](./images/kythera.png)
-
+  <a href="https://kythera.io" alt="Kythera">
+    <img src="./images/kythera.png" height="40%" width="40%">
+  </a>	
 </p>
 
 Part of Kythera: Kubernetes Projects for Developers and Operators – [kythera.io](https://kythera.io). 
 
 <p align="center">
-
-![AT&T Cloud Native Labs](./images/cloud_native_labs.png)
-
+  <a href="https://github.com/att-cloudnative-labs" alt="AT&T Cloud Native Labs">
+    <img src="./images/cloud_native_labs.png" height="50%" width="50%">
+  </a>	
 </p>
 
 Maintained and in-use by the Platform Team @ AT&T Entertainment Cloud Native Labs.
