@@ -1,8 +1,8 @@
 # Kythera Kubernetes Deployment Crawler 
 
-Automatically crawls through resources in a Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubernetes Deployment Crawler will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
+Automatically crawls through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubernetes Deployment Crawler will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
 
-If your Kubernetes clusters are filling up with non-Running pods, then the Kubernetes Deployment Crawler's automatic deletion
+If your lab Kubernetes clusters are filling up with non-Running pods, then the Kubernetes Deployment Crawler's automatic deletion
 can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources, such as generating reports per namespace without actually deleting. 
 
 <p align="center">
@@ -39,13 +39,27 @@ can assist. Future iterations of this project can involve other actions based on
   </a>	
 </p>
 
-## Installation
+## Deployment
+
+First, build the Docker image.
 
 ```bash
 $ docker build -t kubecrawler .
 ```
 
-Deploy the image in your Kubernetes cluster as a Kubernetes Deployment or as a Knative Cron Job Source.
+Deploy the image in your Kubernetes cluster as a Kubernetes CronJob or as a Knative Cron Job Source.
+
+### Deploying as a Kubernetes CronJob
+
+In the appropriate lab Kubernetes cluster, copy over the ```install``` directory, and then run:
+
+```bash
+$ kubectl apply -f install/
+```
+
+This will create the following Kubernetes resources: Namespace (*kythera-system*), ServiceAccount, ClusterRole, ClusterRoleBinding, and finally, CronJob. 
+
+The default CronJob is configured to run at 10:00 A.M. once every day. In order to change this, edit the CronJob resource's cron expression.
 
 ## Configuration Defaults
 
