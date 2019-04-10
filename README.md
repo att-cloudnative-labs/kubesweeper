@@ -46,10 +46,9 @@ Helm is required to install the Kyther Kubernetes Deployment Crawler. For inform
 ```bash
 $ docker build -t kubecrawler .
 ```
-3. 
 2. Run helm template to install Kubecrawler
 ```bash
-$ helm template kubekleaner --set image=<KUBECRAWLER_IMAGE> --set cron="0 10 * * *" --set namespace=<NAMESPACE> | kubectl create -f -
+$ helm template kubekleaner --set image=<KUBECRAWLER_IMAGE> | kubectl create -f -
 ```
 
 Or the makefile can be used pulling values from ./helm/kubecrawler/values.yaml
