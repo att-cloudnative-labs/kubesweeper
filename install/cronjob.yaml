@@ -15,6 +15,7 @@ spec:
           creationTimestamp: null
         spec:
           containers:
+          - args:
             image: docker.io/attcloudnativelabs/kubernetes-deployment-crawler:v0.0.1-alpha
             imagePullPolicy: Always
             name: kubernetes-deployment-crawler
