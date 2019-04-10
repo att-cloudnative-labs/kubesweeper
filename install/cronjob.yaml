@@ -12,13 +12,13 @@ spec:
         spec:
           serviceAccountName: kubernetes-deployment-crawler
           containers:
-            - args:
-              image: docker.io/attcloudnativelabs/kubernetes-deployment-crawler:v0.0.1-alpha
-              imagePullPolicy: Always
-              name: kubernetes-deployment-crawler
-              resources: {}
-              terminationMessagePath: /dev/termination-log
-              terminationMessagePolicy: File
+          - args:
+            image: docker.io/attcloudnativelabs/kubernetes-deployment-crawler:v0.0.1-alpha
+            imagePullPolicy: Always
+            name: kubernetes-deployment-crawler
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
           dnsPolicy: ClusterFirst
           restartPolicy: OnFailure
           schedulerName: default-scheduler
