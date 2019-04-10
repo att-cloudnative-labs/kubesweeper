@@ -40,26 +40,23 @@ can assist. Future iterations of this project can involve other actions based on
 </p>
 
 ## Deployment
+Helm is required to install the Kyther Kubernetes Deployment Crawler. For information on installing Helm please refer to the [Helm quickstart guide](https://helm.sh/docs/using_helm/). After installing helm the following steps can be manually run
 
-First, build the Docker image.
-
+1. Build docker image
 ```bash
 $ docker build -t kubecrawler .
 ```
-
-Deploy the image in your Kubernetes cluster as a Kubernetes CronJob or as a Knative Cron Job Source.
-
-### Deploying as a Kubernetes CronJob
-
-In the appropriate lab Kubernetes cluster, copy over the ```install``` directory, and then run:
-
+3. 
+2. Run helm template to install Kubecrawler
 ```bash
-$ kubectl apply -f install/
+$ helm template kubekleaner --set image=<KUBECRAWLER_IMAGE> --set cron="0 10 * * *" --set namespace=<NAMESPACE> | kubectl create -f -
 ```
 
-This will create the following Kubernetes resources: Namespace (*kythera-system*), ServiceAccount, ClusterRole, ClusterRoleBinding, and finally, CronJob. 
+Or the makefile can be used pulling values from ./helm/kubecrawler/values.yaml
 
-The default CronJob is configured to run at 10:00 A.M. once every day. In order to change this, edit the CronJob resource's cron expression.
+```bash
+$ make
+```
 
 ## Configuration Defaults
 
@@ -75,6 +72,12 @@ Under the ```configs``` folder, the ```config.yaml``` has the following default 
   * 144
     * If the pod restart threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then Kubernetes Deployment Crawler will delete the associated resources
 
+Function configurations can be found in ~/helm/kubecrawler/values.yaml
+
+*name: Name to use for deployment.
+*image: Image used in deployment.
+*cron: Cron expression used to schedule Crawler. Any valid cron expression can be used.
+*namespace: Namespace job will be deployed in.
 
 ## Contributing
 
