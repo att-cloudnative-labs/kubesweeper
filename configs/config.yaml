@@ -1,7 +1,7 @@
 kleaner:
   reasons:
     - reason: "CrashLoopBackOff"
-      restartThreshold: 100
+      restartThreshold: 144
       deleteFuncString: "DeleteCrash"
     - reason: "ImagePullBackOff"
       deleteFuncString: "DeleteGeneric"
