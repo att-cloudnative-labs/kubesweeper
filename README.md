@@ -39,8 +39,22 @@ can assist. Future iterations of this project can involve other actions based on
   </a>	
 </p>
 
+## Deployment as a Kubernetes CronJob
+If the desired cluster does not have Knative installed, then KubeCrawler can be installed as a Kubernetes CronJob.
+
+1. Build docker image
+```bash
+$ docker build -t kubecrawler .
+```
+2. Create Kubernetes resources from ```install``` directory
+```bash
+$ kubectl apply -f install/
+```
+
+Note that step 2 must be run in the context of the Kubernetes cluster. After that command is run, the appropriate Kubernetes resources will be created from the .yaml files in ```install```.
+
 ## Deployment as a Knative CronJobSource
-Helm is required to install the Kythera Kubernetes Deployment Crawler. For information on installing Helm, please refer to the [Helm quickstart guide](https://helm.sh/docs/using_helm/). After installing Helm, the following steps can be manually run:
+If you wish to deploy the Kythera Kubernetes Deployment Crawler on Knative as a CronJobSource, you can use Helm. For information on installing Helm, please refer to the [Helm quickstart guide](https://helm.sh/docs/using_helm/). After installing Helm, the following steps can be manually run:
 
 1. Build docker image
 ```bash
@@ -56,20 +70,6 @@ In lieu of step 2, a Makefile can be used to pull values from ./helm/kubecrawler
 ```bash
 $ make
 ```
-
-## Deployment as a Kubernetes CronJob
-If the desired cluster does not have Knative installed, then KubeCrawler can be installed as a Kubernetes CronJob.
-
-1. Build docker image
-```bash
-$ docker build -t kubecrawler .
-```
-2. Create Kubernetes resources from ```install``` directory
-```bash
-$ kubectl apply -f install/
-```
-
-Note that step 2 must be run in the context of the Kubernetes cluster. After that command is run, the appropriate Kubernetes resources will be created from the .yaml files in ```install```.
 
 ## Configuration Defaults
 
