@@ -25,7 +25,7 @@ func DeleteCrash(deploymentInterface typedappsv1.DeploymentInterface, deployment
 		return DeleteGeneric(deploymentInterface, deployment, restarts, restartThreshold)
 	} else {
 		fmt.Printf("%s/%s is in a CrashLoopBackOff state, but doesn't meet the restart threshold. " +
-			"Restarts/Threshold = %v/%v", deployment.Namespace, deployment.Name, restarts, restartThreshold)
+			"Restarts/Threshold = %v/%v\n", deployment.Namespace, deployment.Name, restarts, restartThreshold)
 		return false, nil
 	}
 }
@@ -84,7 +84,7 @@ func main() {
 			if waiting != nil {
 				reason := waiting.Reason
 				if crawlerConfigDetails, ok := waitingReasons[reason]; ok {
-					fmt.Printf("Waiting reason match. %s/%s has a waiting reason of: %s", pod.Namespace,
+					fmt.Printf("Waiting reason match. %s/%s has a waiting reason of: %s\n", pod.Namespace,
 						pod.OwnerReferences[0].Name, reason)
 					rs, err := clientset.AppsV1().ReplicaSets(pod.Namespace).Get(pod.OwnerReferences[0].Name, metav1.GetOptions{})
 					if err != nil {
