@@ -25,7 +25,7 @@ func DeleteCrash(deploymentInterface typedappsv1.DeploymentInterface, deployment
 		return DeleteGeneric(deploymentInterface, deployment, restarts, restartThreshold)
 	} else {
 		fmt.Printf("%s/%s is in a CrashLoopBackOff state, but doesn't meet the restart threshold. " +
-			"Restarts/Threshold = %v/%v", deployment.Namespace, deployment.Name, restarts, restartThreshold)
+			"Restarts/Threshold = %v/%v\n", deployment.Namespace, deployment.Name, restarts, restartThreshold)
 		return false, nil
 	}
 }
@@ -70,46 +70,44 @@ func main() {
 
 	fmt.Println("Beginning the crawl.")
 
-	for {
-		// get a list of pods for all namespaces
-		pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{})
-		if err != nil {
-			panic(err.Error())
-		}
-		fmt.Println("Got list of pods.")
+	// get a list of pods for all namespaces
+	pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println("Got list of pods.")
 
-		for _, pod := range pods.Items {
-		StatusLoop:
-			for _, status := range pod.Status.ContainerStatuses {
-				waiting := status.State.Waiting
-				if waiting != nil {
-					reason := waiting.Reason
-					if crawlerConfigDetails, ok := waitingReasons[reason]; ok {
-						fmt.Printf("Waiting reason match. %s/%s has a waiting reason of: %s", pod.Namespace,
-							pod.OwnerReferences[0].Name, reason)
-						rs, err := clientset.AppsV1().ReplicaSets(pod.Namespace).Get(pod.OwnerReferences[0].Name, metav1.GetOptions{})
+	for _, pod := range pods.Items {
+	StatusLoop:
+		for _, status := range pod.Status.ContainerStatuses {
+			waiting := status.State.Waiting
+			if waiting != nil {
+				reason := waiting.Reason
+				if crawlerConfigDetails, ok := waitingReasons[reason]; ok {
+					fmt.Printf("Waiting reason match. %s/%s has a waiting reason of: %s\n", pod.Namespace,
+						pod.OwnerReferences[0].Name, reason)
+					rs, err := clientset.AppsV1().ReplicaSets(pod.Namespace).Get(pod.OwnerReferences[0].Name, metav1.GetOptions{})
+					if err != nil {
+						fmt.Printf("Error retrieving ReplicaSets. Error: %s\n", err.Error())
+						continue StatusLoop
+					}
+					if rs.OwnerReferences != nil {
+						deploy, err := clientset.AppsV1().Deployments(pod.Namespace).Get(rs.OwnerReferences[0].Name, metav1.GetOptions{})
 						if err != nil {
-							fmt.Printf("Error retrieving ReplicaSets. Error: %s\n", err.Error())
+							fmt.Printf("Error retrieving Deployments. Error: %s\n", err.Error())
 							continue StatusLoop
 						}
-						if rs.OwnerReferences != nil {
-							deploy, err := clientset.AppsV1().Deployments(pod.Namespace).Get(rs.OwnerReferences[0].Name, metav1.GetOptions{})
+						if deploy != nil && deploy.Name != "" { // indicates something to be deleted
+							_, err = crawlerConfigDetails.DeleteFunction(clientset.AppsV1().Deployments(pod.Namespace), deploy, int(status.RestartCount), crawlerConfigDetails.RestartThreshold)
 							if err != nil {
-								fmt.Printf("Error retrieving Deployments. Error: %s\n", err.Error())
+								fmt.Printf("Error deleting Deployment. Error: %s\n", err.Error())
 								continue StatusLoop
 							}
-							if deploy != nil && deploy.Name != "" { // indicates something to be deleted
-								_, err = crawlerConfigDetails.DeleteFunction(clientset.AppsV1().Deployments(pod.Namespace), deploy, int(status.RestartCount), crawlerConfigDetails.RestartThreshold)
-								if err != nil {
-									fmt.Printf("Error deleting Deployment. Error: %s\n", err.Error())
-									continue StatusLoop
-								}
-							} else {
-								fmt.Println("No deployment found.")
-							}
 						} else {
-							fmt.Println("No replica set owner reference.")
+							fmt.Println("No deployment found.")
 						}
+					} else {
+						fmt.Println("No replica set owner reference.")
 					}
 				}
 			}

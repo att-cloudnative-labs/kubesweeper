@@ -7,13 +7,10 @@ spec:
   concurrencyPolicy: Allow
   failedJobsHistoryLimit: 1
   jobTemplate:
-    metadata:
-      creationTimestamp: null
     spec:
       template:
-        metadata:
-          creationTimestamp: null
         spec:
+          serviceAccountName: kubernetes-deployment-crawler
           containers:
           - args:
             image: docker.io/attcloudnativelabs/kubernetes-deployment-crawler:v0.0.1-alpha
@@ -27,6 +24,6 @@ spec:
           schedulerName: default-scheduler
           securityContext: {}
           terminationGracePeriodSeconds: 30
-  schedule: '0 10 * * *'
+  schedule: '0 17 * * *'
   successfulJobsHistoryLimit: 3
   suspend: false
