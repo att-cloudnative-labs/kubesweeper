@@ -1,0 +1,12 @@
+apiVersion: sources.eventing.knative.dev/v1alpha1
+kind: CronJobSource
+metadata:
+  name: {{ .Values.name }}-source
+  namespace: {{ .Values.namespace }}
+spec:
+  namespace: {{ .Values.namespace }}
+  schedule: {{ .Values.cron }}
+  sink:
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Service
+    name: {{ .Values.name }}
