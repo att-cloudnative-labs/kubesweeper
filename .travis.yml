@@ -6,4 +6,7 @@ go:
 services:
   - docker
 
+before_install:
+  - docker build -t att-cloudnative-labs .
+
 script: go test
