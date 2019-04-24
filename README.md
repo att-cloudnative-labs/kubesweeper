@@ -6,6 +6,12 @@ If your lab Kubernetes clusters are filling up with non-Running pods, then the K
 can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources, such as generating reports per namespace without actually deleting. 
 
 <p align="center">
+  <img src="https://travis-ci.org/att-cloudnative-labs/kubesweeper.svg?branch=master">	
+  <a href="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kubesweeper" alt="Go Report Card">
+    <img src="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kubesweeper">
+  </a>	
+</p>
+<p align="center">
     <a href="https://github.com/att-cloudnative-labs/kubesweeper/graphs/contributors" alt="Contributors">
 		<img src="https://img.shields.io/github/contributors/att-cloudnative-labs/kubesweeper.svg">
 	</a>
@@ -21,7 +27,6 @@ can assist. Future iterations of this project can involve other actions based on
 	<a href="https://github.com/att-cloudnative-labs/kubesweeper/issues" alt="Issues">
 		<img src="https://img.shields.io/github/issues-raw/att-cloudnative-labs/kubesweeper.svg">
 	</a>
-	<img src="https://travis-ci.org/att-cloudnative-labs/kubesweeper.svg?branch=master">	
 	</p>
 <p align="center">
 	<a href="https://github.com/att-cloudnative-labs/kubesweeper/stargazers" alt="Stars">
@@ -33,11 +38,6 @@ can assist. Future iterations of this project can involve other actions based on
 	<a href="https://github.com/att-cloudnative-labs/kubesweeper/network/members" alt="Forks">
 		<img src="https://img.shields.io/github/forks/att-cloudnative-labs/kubesweeper.svg?style=social">
 	</a>	
-</p>
-<p align="center">
-  <a href="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kubesweeper" alt="Go Report Card">
-    <img src="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kubesweeper">
-  </a>	
 </p>
 
 ## Deployment as a Kubernetes CronJob
