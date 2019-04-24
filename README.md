@@ -1,4 +1,4 @@
-# Kythera KubeCrawler 
+# Kubesweeper 
 
 Automatically crawls through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubernetes Deployment Crawler will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
 
