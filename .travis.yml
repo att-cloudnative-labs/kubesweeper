@@ -4,5 +4,4 @@ go:
   - 1.12.x
 
 script:
-  - make go-build
   - env GO111MODULE=on go build
