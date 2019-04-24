@@ -1,4 +1,4 @@
-# Kythera Kubernetes Deployment Crawler 
+# Kythera KubeCrawler 
 
 Automatically crawls through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubernetes Deployment Crawler will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
 
@@ -6,36 +6,37 @@ If your lab Kubernetes clusters are filling up with non-Running pods, then the K
 can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources, such as generating reports per namespace without actually deleting. 
 
 <p align="center">
-    <a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/graphs/contributors" alt="Contributors">
-		<img src="https://img.shields.io/github/contributors/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg">
+    <a href="https://github.com/att-cloudnative-labs/kubesweeper/graphs/contributors" alt="Contributors">
+		<img src="https://img.shields.io/github/contributors/att-cloudnative-labs/kubesweeper.svg">
 	</a>
-	<a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/commits/master" alt="Commits">
-		<img src="https://img.shields.io/github/commit-activity/m/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg">
+	<a href="https://github.com/att-cloudnative-labs/kubesweeper/commits/master" alt="Commits">
+		<img src="https://img.shields.io/github/commit-activity/m/att-cloudnative-labs/kubesweeper.svg">
 	</a>
-	<a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/pulls" alt="Open pull requests">
-		<img src="https://img.shields.io/github/issues-pr-raw/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg">
+	<a href="https://github.com/att-cloudnative-labs/kubesweeper/pulls" alt="Open pull requests">
+		<img src="https://img.shields.io/github/issues-pr-raw/att-cloudnative-labs/kubesweeper.svg">
 	</a>
-	<a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/pulls" alt="Closed pull requests">
-    	<img src="https://img.shields.io/github/issues-pr-closed-raw/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg">
+	<a href="https://github.com/att-cloudnative-labs/kubesweeper/pulls" alt="Closed pull requests">
+    	<img src="https://img.shields.io/github/issues-pr-closed-raw/att-cloudnative-labs/kubesweeper.svg">
 	</a>
-	<a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/issues" alt="Issues">
-		<img src="https://img.shields.io/github/issues-raw/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg">
+	<a href="https://github.com/att-cloudnative-labs/kubesweeper/issues" alt="Issues">
+		<img src="https://img.shields.io/github/issues-raw/att-cloudnative-labs/kubesweeper.svg">
 	</a>
+	<img src="https://travis-ci.org/att-cloudnative-labs/kubesweeper.svg?branch=master">	
 	</p>
 <p align="center">
-	<a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/stargazers" alt="Stars">
-		<img src="https://img.shields.io/github/stars/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg?style=social">
+	<a href="https://github.com/att-cloudnative-labs/kubesweeper/stargazers" alt="Stars">
+		<img src="https://img.shields.io/github/stars/att-cloudnative-labs/kubesweeper.svg?style=social">
 	</a>	
-	<a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/watchers" alt="Watchers">
-		<img src="https://img.shields.io/github/watchers/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg?style=social">
+	<a href="https://github.com/att-cloudnative-labs/kubesweeper/watchers" alt="Watchers">
+		<img src="https://img.shields.io/github/watchers/att-cloudnative-labs/kubesweeper.svg?style=social">
 	</a>	
-	<a href="https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/network/members" alt="Forks">
-		<img src="https://img.shields.io/github/forks/att-cloudnative-labs/kythera-k8s-deployment-crawler.svg?style=social">
+	<a href="https://github.com/att-cloudnative-labs/kubesweeper/network/members" alt="Forks">
+		<img src="https://img.shields.io/github/forks/att-cloudnative-labs/kubesweeper.svg?style=social">
 	</a>	
 </p>
 <p align="center">
-  <a href="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler" alt="Go Report Card">
-    <img src="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler">
+  <a href="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kubesweeper" alt="Go Report Card">
+    <img src="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kubesweeper">
   </a>	
 </p>
 
@@ -94,7 +95,7 @@ Function configurations can be found in ~/helm/kubecrawler/values.yaml
 
 ## Contributing
 
-1. [Fork Kubernetes Deployment Cleaner](https://github.com/att-cloudnative-labs/kythera-k8s-deployment-crawler/fork)
+1. [Fork Kubernetes Deployment Cleaner](https://github.com/att-cloudnative-labs/kubesweeper/fork)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
