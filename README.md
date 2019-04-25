@@ -7,7 +7,7 @@ can assist. Future iterations of this project can involve other actions based on
 
 <p align="center">
   <img src="https://travis-ci.org/att-cloudnative-labs/kubesweeper.svg?branch=master">	
-  <a href="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kubesweeper" alt="Go Report Card">
+  <a href="https://goreportcard.com/report/github.com/att-cloudnative-labs/kubesweeper" alt="Go Report Card">
     <img src="https://goreportcard.com/badge/github.com/att-cloudnative-labs/kubesweeper">
   </a>	
 </p>
