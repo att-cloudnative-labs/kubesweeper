@@ -1,0 +1,8 @@
+# Default values for kubesweeper.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: kubesweeper
+image: docker.io/att-cloudnative-labs/kubesweeper:v0.0.1-alpha
+cron: 0 17 * * *
+namespace: att-cloudnative-labs

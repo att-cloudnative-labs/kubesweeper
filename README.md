@@ -1,6 +1,6 @@
 # Kubesweeper 
 
-Automatically crawls through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubesweeper will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
+Automatically iterates through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubesweeper will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
 
 If your lab Kubernetes clusters are filling up with non-Running pods, then Kubesweeper's automatic deletion
 can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources, such as generating reports per namespace without actually deleting. 
@@ -86,7 +86,7 @@ Under the ```configs``` folder, the ```config.yaml``` has the following default 
   * Failed
 * Pod restart threshold
   * 144
-    * If the pod restart threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then KubeSweeper will delete the associated resources
+    * If the pod restart threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then Kubesweeper will delete the associated resources
 
 Helm function configurations can be found in ```~/helm/kubesweeper/values.yaml```.
 

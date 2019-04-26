@@ -10,15 +10,15 @@ COPY go.sum /app/go.sum
 
 WORKDIR /app
 
-RUN GIT_TERMINAL_PROMPT=1 GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build --installsuffix cgo --ldflags="-s" -o kubecrawler
+RUN GIT_TERMINAL_PROMPT=1 GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build --installsuffix cgo --ldflags="-s" -o kubesweeper
 
 # The second stage: Just what's needed
 FROM alpine:3.8
 # copy the binary and the settings into the container
-COPY --from=builder /app/kubecrawler /app/kubecrawler
+COPY --from=builder /app/kubesweeper /app/kubesweeper
 COPY --from=builder /app/configs/ /app/configs/
 
 WORKDIR /app
 
 # Run it
-ENTRYPOINT ["./kubecrawler"]
+ENTRYPOINT ["./kubesweeper"]

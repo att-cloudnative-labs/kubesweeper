@@ -1,5 +1,5 @@
 build:
-	docker build -t kubecrawler .
-	helm template kubecrawler --set image=kubecrawler | kubectl create -f -
+	docker build -t kubesweeper .
+	helm template kubesweeper --set image=kubesweeper | kubectl create -f -
 go-build:
 	go build
