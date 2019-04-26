@@ -96,7 +96,7 @@ Helm function configurations can be found in ```~/helm/kubesweeper/values.yaml``
   * Image used in deployment
 * cron
   * Cron expression used to schedule Kubesweeper
-    * Any valid cron expression can be used.
+    * Any valid cron expression can be used
 * namespace
   * Namespace job will be deployed in
 
