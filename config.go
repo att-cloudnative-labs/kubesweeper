@@ -10,7 +10,7 @@ import (
 var ConfigObj = KleanerConfig{}
 
 // This map would need to be updated to account for any other behavior we would want to enable
-// The keys in this map have to map directly to the DeleteFuncString in the CrawlerConfigDetails struct
+// The keys in this map have to map directly to the DeleteFuncString in the SweeperConfigDetails struct
 var funcMap = map[string]DeleteFunc{
 	"DeleteCrash":   DeleteCrash,
 	"DeleteGeneric": DeleteGeneric,
@@ -20,13 +20,13 @@ var funcMap = map[string]DeleteFunc{
  * This is the parent config object
  */
 type KleanerConfig struct {
-	Reasons []CrawlerConfigDetails `yaml:"reasons"`
+	Reasons []SweeperConfigDetails `yaml:"reasons"`
 }
 
 /**
  * This is the object that holds the necessary information
  */
-type CrawlerConfigDetails struct {
+type SweeperConfigDetails struct {
 	Reason           string `yaml:"reason"`
 	RestartThreshold int    `yaml:"restartThreshold,omitempty"`
 	DeleteFuncString string `yaml:"deleteFuncString"`

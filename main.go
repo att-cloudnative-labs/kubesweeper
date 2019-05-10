@@ -50,7 +50,7 @@ func main() {
 	// initialize the config, from yaml or environment variables
 	var kleanerConfig = ConfigObj
 	// create the map that will hold the reasons and the config object
-	var waitingReasons = make(map[string]CrawlerConfigDetails)
+	var waitingReasons = make(map[string]SweeperConfigDetails)
 
 	// fill the map
 	for _, conf := range kleanerConfig.Reasons {
@@ -68,7 +68,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	fmt.Println("Beginning the crawl.")
+	fmt.Println("Beginning the sweep.")
 
 	// get a list of pods for all namespaces
 	pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{})
@@ -83,7 +83,7 @@ func main() {
 			waiting := status.State.Waiting
 			if waiting != nil {
 				reason := waiting.Reason
-				if crawlerConfigDetails, ok := waitingReasons[reason]; ok {
+				if SweeperConfigDetails, ok := waitingReasons[reason]; ok {
 					fmt.Printf("Waiting reason match. %s/%s has a waiting reason of: %s\n", pod.Namespace,
 						pod.OwnerReferences[0].Name, reason)
 					rs, err := clientset.AppsV1().ReplicaSets(pod.Namespace).Get(pod.OwnerReferences[0].Name, metav1.GetOptions{})
@@ -98,7 +98,7 @@ func main() {
 							continue StatusLoop
 						}
 						if deploy != nil && deploy.Name != "" { // indicates something to be deleted
-							_, err = crawlerConfigDetails.DeleteFunction(clientset.AppsV1().Deployments(pod.Namespace), deploy, int(status.RestartCount), crawlerConfigDetails.RestartThreshold)
+							_, err = SweeperConfigDetails.DeleteFunction(clientset.AppsV1().Deployments(pod.Namespace), deploy, int(status.RestartCount), SweeperConfigDetails.RestartThreshold)
 							if err != nil {
 								fmt.Printf("Error deleting Deployment. Error: %s\n", err.Error())
 								continue StatusLoop

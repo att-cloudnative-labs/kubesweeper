@@ -1,4 +1,4 @@
-module github.com/att-cloudnative-labs/kubernetes-deployment-crawler
+module github.com/att-cloudnative-labs/kubesweeper
 
 go 1.12
 

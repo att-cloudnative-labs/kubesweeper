@@ -1,8 +1,0 @@
-# Default values for kubecrawler.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-name: kubernetes-deployment-crawler
-image: docker.io/attcloudnativelabs/kubernetes-deployment-crawler:v0.0.1-alpha
-cron: 0 10 * * *
-namespace: kythera-system

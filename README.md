@@ -1,9 +1,11 @@
 # Kubesweeper 
 
-Automatically crawls through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubernetes Deployment Crawler will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
+Automatically iterates through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubesweeper will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
 
-If your lab Kubernetes clusters are filling up with non-Running pods, then the Kubernetes Deployment Crawler's automatic deletion
+If your lab Kubernetes clusters are filling up with non-Running pods, then Kubesweeper's automatic deletion
 can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources, such as generating reports per namespace without actually deleting. 
+
+Please note that Kubesweeper is intended for use in lab—not production, customer-facing—clusters.
 
 <p align="center">
   <img src="https://travis-ci.org/att-cloudnative-labs/kubesweeper.svg?branch=master">	
@@ -41,11 +43,11 @@ can assist. Future iterations of this project can involve other actions based on
 </p>
 
 ## Deployment as a Kubernetes CronJob
-If the desired cluster does not have Knative installed, then KubeCrawler can be installed as a Kubernetes CronJob.
+If the desired cluster does not have Knative installed, then Kubesweeper can be installed as a Kubernetes CronJob.
 
 1. Build docker image
 ```bash
-$ docker build -t kubecrawler .
+$ docker build -t kubesweeper .
 ```
 2. Create Kubernetes resources from ```install``` directory
 ```bash
@@ -55,18 +57,18 @@ $ kubectl apply -f install/
 Note that step 2 must be run in the context of the Kubernetes cluster. After that command is run, the appropriate Kubernetes resources will be created from the .yaml files in ```install```.
 
 ## Deployment as a Knative CronJobSource
-If you wish to deploy the Kythera Kubernetes Deployment Crawler on Knative as a CronJobSource, you can use Helm. For information on installing Helm, please refer to the [Helm quickstart guide](https://helm.sh/docs/using_helm/). After installing Helm, the following steps can be manually run:
+If you wish to deploy Kubesweeper on Knative as a CronJobSource, you can use Helm. For information on installing Helm, please refer to the [Helm quickstart guide](https://helm.sh/docs/using_helm/). After installing Helm, the following steps can be manually run:
 
 1. Build docker image
 ```bash
-$ docker build -t kubecrawler .
+$ docker build -t kubesweeper .
 ```
-2. Run helm template to install Kubecrawler
+2. Run helm template to install Kubesweeper
 ```bash
-$ helm template kubecrawler --set image=<KUBECRAWLER_IMAGE> | kubectl create -f -
+$ helm template kubesweeper --set image=<KUBESWEEPER_IMAGE> | kubectl create -f -
 ```
 
-In lieu of step 2, a Makefile can be used to pull values from ./helm/kubecrawler/values.yaml:
+In lieu of step 2, a Makefile can be used to pull values from ./helm/kubesweeper/values.yaml:
 
 ```bash
 $ make
@@ -84,32 +86,29 @@ Under the ```configs``` folder, the ```config.yaml``` has the following default 
   * Failed
 * Pod restart threshold
   * 144
-    * If the pod restart threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then Kubernetes Deployment Crawler will delete the associated resources
+    * If the pod restart threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then Kubesweeper will delete the associated resources
 
-Function configurations can be found in ~/helm/kubecrawler/values.yaml
+Helm function configurations can be found in ```~/helm/kubesweeper/values.yaml```.
 
-*name: Name to use for deployment.
-*image: Image used in deployment.
-*cron: Cron expression used to schedule Crawler. Any valid cron expression can be used.
-*namespace: Namespace job will be deployed in.
+* name
+  * Name to use for deployment
+* image
+  * Image used in deployment
+* cron
+  * Cron expression used to schedule Kubesweeper
+    * Any valid cron expression can be used
+* namespace
+  * Namespace job will be deployed in
 
 ## Contributing
 
-1. [Fork Kubernetes Deployment Cleaner](https://github.com/att-cloudnative-labs/kubesweeper/fork)
+1. [Fork Kubesweeper](https://github.com/att-cloudnative-labs/kubesweeper/fork)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
 
 ## Additional info
-
-<p align="center">
-  <a href="https://kythera.io" alt="Kythera">
-    <img src="./images/kythera.png" height="40%" width="40%">
-  </a>	
-</p>
-
-Part of Kythera: Kubernetes Projects for Developers and Operators – [kythera.io](https://kythera.io). 
 
 <p align="center">
   <a href="https://github.com/att-cloudnative-labs" alt="AT&T Cloud Native Labs">
