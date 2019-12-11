@@ -11,4 +11,4 @@ kleaner:
       deleteFuncString: "DeleteGeneric"
     - reason: "Failed"
       deleteFuncString: "DeleteGeneric"
-  dayLimit: 85
+  dayLimit: 30
