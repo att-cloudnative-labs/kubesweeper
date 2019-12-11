@@ -20,7 +20,8 @@ var funcMap = map[string]DeleteFunc{
  * This is the parent config object
  */
 type KleanerConfig struct {
-	Reasons []SweeperConfigDetails `yaml:"reasons"`
+	Reasons  []SweeperConfigDetails `yaml:"reasons"`
+	DayLimit int                    `yaml:"dayLimit"`
 }
 
 /**

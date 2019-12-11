@@ -13,7 +13,7 @@ spec:
           serviceAccountName: kubesweeper
           containers:
           - args:
-            image: docker.io/att-cloudnative-labs/kubesweeper:v0.0.1-alpha
+            image: docker-registry.aeg.cloud/common-platform/kubesweeper:0.0.0-120619-1
             imagePullPolicy: Always
             name: kubesweeper
             resources: {}
@@ -24,6 +24,6 @@ spec:
           schedulerName: default-scheduler
           securityContext: {}
           terminationGracePeriodSeconds: 30
-  schedule: '0 17 * * *'
+  schedule: '*/2 * * * *'
   successfulJobsHistoryLimit: 3
   suspend: false
