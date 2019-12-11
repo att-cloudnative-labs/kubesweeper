@@ -13,7 +13,7 @@ spec:
           serviceAccountName: kubesweeper
           containers:
           - args:
-            image: docker-registry.aeg.cloud/common-platform/kubesweeper:0.0.0-120619-1
+            image: docker.io/att-cloudnative-labs/kubesweeper:v0.0.1-alpha
             imagePullPolicy: Always
             name: kubesweeper
             resources: {}
