@@ -23,9 +23,9 @@ var funcMap = map[string]DeleteFunc{
 type KleanerConfig struct {
 	Reasons  			[]SweeperConfigDetails `mapstructure:"reasons"`
 	DayLimit 			int                    `mapstructure:"day_limit"`
-	DeleteIngresses		bool				   `mapstructure:"deleteIngresses"`
-	DeleteServices      bool				   `mapstructure:"deleteServices"`
-	DeleteHpas			bool				   `mapstructure:"deleteHpas"`
+	DeleteIngresses		bool				   `mapstructure:"delete_ingresses"`
+	DeleteServices      bool				   `mapstructure:"delete_services"`
+	DeleteHpas			bool				   `mapstructure:"delete_hpas"`
 	ExcludedNamespaces  []string			   `mapstructure:"excluded_namespaces"`
 }
 
@@ -34,8 +34,8 @@ type KleanerConfig struct {
  */
 type SweeperConfigDetails struct {
 	Reason           string `mapstructure:"reason"`
-	RestartThreshold int    `mapstructure:"restartThreshold,omitempty"`
-	DeleteFuncString string `mapstructure:"deleteFuncString"`
+	RestartThreshold int    `mapstructure:"restart_threshold,omitempty"`
+	DeleteFuncString string `mapstructure:"delete_func_string"`
 	DeleteFunction   DeleteFunc
 }
 

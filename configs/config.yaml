@@ -1,21 +1,18 @@
 reasons:
   - reason: "CrashLoopBackOff"
-    restartThreshold: 1000
-    deleteFuncString: "DeleteCrash"
+    restart_threshold: 1000
+    delete_func_string: "DeleteCrash"
   - reason: "ImagePullBackOff"
-    deleteFuncString: "DeleteGeneric"
+    delete_func_string: "DeleteGeneric"
   - reason: "ErrImagePull"
-    deleteFuncString: "DeleteGeneric"
+    delete_func_string: "DeleteGeneric"
   - reason: "Completed"
-    deleteFuncString: "DeleteGeneric"
+    delete_func_string: "DeleteGeneric"
   - reason: "Failed"
-    deleteFuncString: "DeleteGeneric"
+    delete_func_string: "DeleteGeneric"
 day_limit: 30
-deleteIngresses: true
-deleteServices: true
-deleteHpas: true
+delete_ingresses: true
+delete_services: true
+delete_hpas: true
 excluded_namespaces:
-  - kube-system
-  - default
-  - nats-cluster
-  - istio-system
+  - exclude-me

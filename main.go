@@ -166,7 +166,6 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println("Got list of pods.")
 
 	for _, pod := range pods.Items {
 	StatusLoop:
@@ -175,31 +174,30 @@ func main() {
 			_, found := Find(kleanerConfig.ExcludedNamespaces, pod.Namespace)
 			if found {
 				fmt.Println("Pod's namespace is excluded from deletion.")
-				continue		// don't need else
+				continue
 			}
 
-			if pod.Namespace != "kube-system" && pod.Namespace != "default" && pod.Namespace != "nats-cluster" {
-				rs, err := clientset.AppsV1().ReplicaSets(pod.Namespace).Get(pod.OwnerReferences[0].Name, metav1.GetOptions{})
-				if err != nil {
-					fmt.Printf("Error retrieving ReplicaSets. Error: %s\n", err.Error())
-					continue StatusLoop
-				}
-				deploy, err := clientset.AppsV1().Deployments(pod.Namespace).Get(rs.OwnerReferences[0].Name, metav1.GetOptions{})
-				if err != nil {
-					fmt.Printf("Error retrieving Deployments. Error: %s\n", err.Error())
-					continue StatusLoop
-				}
-				if deploy != nil && deploy.Name != "" {
-					fmt.Println(deploy.GetNamespace() + "/" + deploy.GetName())
-					fmt.Println(deploy.GetCreationTimestamp())
-					if deploy.GetCreationTimestamp().AddDate(0, 0, kleanerConfig.DayLimit).Before(time.Now()) {
-						fmt.Println("I found an old deployment past " + strconv.Itoa(kleanerConfig.DayLimit) + " days!")
-						if deploy.GetName() == "insertnamehere" {
-							_, err = DeleteGeneric(clientset, deploy, int(status.RestartCount), 0)
-						}
+			rs, err := clientset.AppsV1().ReplicaSets(pod.Namespace).Get(pod.OwnerReferences[0].Name, metav1.GetOptions{})
+			if err != nil {
+				fmt.Printf("Error retrieving ReplicaSets. Error: %s\n", err.Error())
+				continue StatusLoop
+			}
+			deploy, err := clientset.AppsV1().Deployments(pod.Namespace).Get(rs.OwnerReferences[0].Name, metav1.GetOptions{})
+			if err != nil {
+				fmt.Printf("Error retrieving Deployments. Error: %s\n", err.Error())
+				continue StatusLoop
+			}
+			if deploy != nil && deploy.Name != "" {
+				fmt.Println(deploy.GetNamespace() + "/" + deploy.GetName())
+				fmt.Println(deploy.GetCreationTimestamp())
+				if deploy.GetCreationTimestamp().AddDate(0, 0, kleanerConfig.DayLimit).Before(time.Now()) {
+					fmt.Println("I found an old deployment past " + strconv.Itoa(kleanerConfig.DayLimit) + " days!")
+					if deploy.GetName() == "insertnamehere" {
+						_, err = DeleteGeneric(clientset, deploy, int(status.RestartCount), 0)
 					}
 				}
 			}
+
 
 			// CHECK #2: Pod "Waiting" state
 			waiting := status.State.Waiting
@@ -219,7 +217,7 @@ func main() {
 							fmt.Printf("Error retrieving Deployments. Error: %s\n", err.Error())
 							continue StatusLoop
 						}
-						if deploy != nil && deploy.Name != "" && pod.Namespace != "kube-system" && pod.Namespace != "default" { // indicates something to be deleted
+						if deploy != nil && deploy.Name != "" { // indicates something to be deleted
 							_, err = SweeperConfigDetails.DeleteFunction(clientset, deploy, int(status.RestartCount), SweeperConfigDetails.RestartThreshold)
 							if err != nil {
 								fmt.Printf("Error deleting Deployment. Error: %s\n", err.Error())
