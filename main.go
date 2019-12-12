@@ -54,26 +54,33 @@ func DeleteGeneric(clientset *kubernetes.Clientset, deployment *v1.Deployment, r
 }
 
 func DeleteLeftoverResources(clientset *kubernetes.Clientset, deployment *v1.Deployment) (bool, error) {
-	// TODO: make each one an if statement based on configuration
-	_, err := DeleteIngress(clientset, deployment)
-	if err != nil {
-		fmt.Printf("%s/%s, Error calling DeleteIngress: %s \n", deployment.Namespace, deployment.Name, err.Error())
-		return false, err
+	var kleanerConfig = ConfigObj
+
+	if kleanerConfig.DeleteIngresses {
+		_, err := DeleteIngress(clientset, deployment)
+		if err != nil {
+			fmt.Printf("%s/%s, Error calling DeleteIngress: %s \n", deployment.Namespace, deployment.Name, err.Error())
+			return false, err
+		}
 	}
 
-	_, err = DeleteService(clientset, deployment)
-	if err != nil {
-		fmt.Printf("%s/%s, Error calling DeleteService: %s \n", deployment.Namespace, deployment.Name, err.Error())
-		return false, err
+	if kleanerConfig.DeleteServices {
+		_, err := DeleteService(clientset, deployment)
+		if err != nil {
+			fmt.Printf("%s/%s, Error calling DeleteService: %s \n", deployment.Namespace, deployment.Name, err.Error())
+			return false, err
+		}
 	}
 
-	_, err = DeleteHpa(clientset, deployment)
-	if err != nil {
-		fmt.Printf("%s/%s, Error calling DeleteHpa: %s \n", deployment.Namespace, deployment.Name, err.Error())
-		return false, err
+	if kleanerConfig.DeleteHpas {
+		_, err := DeleteHpa(clientset, deployment)
+		if err != nil {
+			fmt.Printf("%s/%s, Error calling DeleteHpa: %s \n", deployment.Namespace, deployment.Name, err.Error())
+			return false, err
+		}
 	}
 
-	return true, err
+	return true, nil
 }
 
 func DeleteIngress(clientset *kubernetes.Clientset, deployment *v1.Deployment) (bool, error) {
@@ -172,7 +179,7 @@ func main() {
 					fmt.Println(deploy.GetCreationTimestamp())
 					if deploy.GetCreationTimestamp().AddDate(0, 0, kleanerConfig.DayLimit).Before(time.Now()) {
 						fmt.Println("I found an old deployment past " + strconv.Itoa(kleanerConfig.DayLimit) + " days!")
-						//if deploy.GetName() == "policy-2-1-0" {
+						//if deploy.GetName() == "enternamehere" {
 							_, err = DeleteGeneric(clientset, deploy, int(status.RestartCount), 0)
 						//}
 					}

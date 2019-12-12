@@ -12,3 +12,6 @@ kleaner:
     - reason: "Failed"
       deleteFuncString: "DeleteGeneric"
   dayLimit: 30
+  deleteIngresses: true
+  deleteServices: true
+  deleteHpas: true
