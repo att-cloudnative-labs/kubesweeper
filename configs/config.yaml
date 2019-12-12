@@ -1,17 +1,21 @@
-kleaner:
-  reasons:
-    - reason: "CrashLoopBackOff"
-      restartThreshold: 1000
-      deleteFuncString: "DeleteCrash"
-    - reason: "ImagePullBackOff"
-      deleteFuncString: "DeleteGeneric"
-    - reason: "ErrImagePull"
-      deleteFuncString: "DeleteGeneric"
-    - reason: "Completed"
-      deleteFuncString: "DeleteGeneric"
-    - reason: "Failed"
-      deleteFuncString: "DeleteGeneric"
-  dayLimit: 30
-  deleteIngresses: true
-  deleteServices: true
-  deleteHpas: true
+reasons:
+  - reason: "CrashLoopBackOff"
+    restartThreshold: 1000
+    deleteFuncString: "DeleteCrash"
+  - reason: "ImagePullBackOff"
+    deleteFuncString: "DeleteGeneric"
+  - reason: "ErrImagePull"
+    deleteFuncString: "DeleteGeneric"
+  - reason: "Completed"
+    deleteFuncString: "DeleteGeneric"
+  - reason: "Failed"
+    deleteFuncString: "DeleteGeneric"
+day_limit: 30
+deleteIngresses: true
+deleteServices: true
+deleteHpas: true
+excluded_namespaces:
+  - kube-system
+  - default
+  - nats-cluster
+  - istio-system

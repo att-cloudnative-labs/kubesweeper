@@ -17,6 +17,15 @@ func (b bin) String() string {
 	return fmt.Sprintf("%b", b)
 }
 
+func Find(slice []string, val string) (int, bool) {
+	for i, item := range slice {
+		if item == val {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
 type DeleteFunc func(clientset *kubernetes.Clientset, deployment *v1.Deployment, restarts int, restartThreshold int) (bool, error)
 
 func DeleteCrash(clientset *kubernetes.Clientset, deployment *v1.Deployment, restarts int, restartThreshold int) (bool, error) {
@@ -163,6 +172,12 @@ func main() {
 	StatusLoop:
 		for _, status := range pod.Status.ContainerStatuses {
 			// CHECK #1: Deployment age
+			_, found := Find(kleanerConfig.ExcludedNamespaces, pod.Namespace)
+			if found {
+				fmt.Println("Pod's namespace is excluded from deletion.")
+				continue		// don't need else
+			}
+
 			if pod.Namespace != "kube-system" && pod.Namespace != "default" && pod.Namespace != "nats-cluster" {
 				rs, err := clientset.AppsV1().ReplicaSets(pod.Namespace).Get(pod.OwnerReferences[0].Name, metav1.GetOptions{})
 				if err != nil {
@@ -179,9 +194,9 @@ func main() {
 					fmt.Println(deploy.GetCreationTimestamp())
 					if deploy.GetCreationTimestamp().AddDate(0, 0, kleanerConfig.DayLimit).Before(time.Now()) {
 						fmt.Println("I found an old deployment past " + strconv.Itoa(kleanerConfig.DayLimit) + " days!")
-						//if deploy.GetName() == "enternamehere" {
+						if deploy.GetName() == "insertnamehere" {
 							_, err = DeleteGeneric(clientset, deploy, int(status.RestartCount), 0)
-						//}
+						}
 					}
 				}
 			}

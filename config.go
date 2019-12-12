@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"os"
+	"strings"
 )
 
 // make this config object available outside
@@ -20,20 +21,21 @@ var funcMap = map[string]DeleteFunc{
  * This is the parent config object
  */
 type KleanerConfig struct {
-	Reasons  			[]SweeperConfigDetails `yaml:"reasons"`
-	DayLimit 			int                    `yaml:"dayLimit"`
-	DeleteIngresses		bool				   `yaml:"deleteIngresses"`
-	DeleteServices      bool				   `yaml:"deleteServices"`
-	DeleteHpas			bool				   `yaml:"deleteHpas"`
+	Reasons  			[]SweeperConfigDetails `mapstructure:"reasons"`
+	DayLimit 			int                    `mapstructure:"day_limit"`
+	DeleteIngresses		bool				   `mapstructure:"deleteIngresses"`
+	DeleteServices      bool				   `mapstructure:"deleteServices"`
+	DeleteHpas			bool				   `mapstructure:"deleteHpas"`
+	ExcludedNamespaces  []string			   `mapstructure:"excluded_namespaces"`
 }
 
 /**
  * This is the object that holds the necessary information
  */
 type SweeperConfigDetails struct {
-	Reason           string `yaml:"reason"`
-	RestartThreshold int    `yaml:"restartThreshold,omitempty"`
-	DeleteFuncString string `yaml:"deleteFuncString"`
+	Reason           string `mapstructure:"reason"`
+	RestartThreshold int    `mapstructure:"restartThreshold,omitempty"`
+	DeleteFuncString string `mapstructure:"deleteFuncString"`
 	DeleteFunction   DeleteFunc
 }
 
@@ -49,29 +51,33 @@ func (dc *KleanerConfig) SetFunctions(fnMap map[string]DeleteFunc) {
 }
 
 func init() {
+	v := viper.New()
+	
 	// we'll read config in from YAML
-	viper.SetConfigType("yaml")
+	v.SetConfigType("yaml")
 
 	// The config file name is config.yaml
-	viper.SetConfigName("config")
+	v.SetConfigName("config")
 
 	// Just in case we want to set another directory via an environment variable
 	configDir := os.Getenv("GO_CONFIG_DIR")
 	if len(configDir) > 0 {
-		viper.AddConfigPath(configDir)
+		v.AddConfigPath(configDir)
 	}
 
-	viper.AddConfigPath("./configs")
+	v.AddConfigPath("./configs")
 	// read the config file into memory
-	err := viper.ReadInConfig()
+
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	err := v.ReadInConfig()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	// unmarshal yaml file into ConfigObj member
-	err = viper.UnmarshalKey("kleaner", &ConfigObj)
-	viper.SetEnvPrefix("kleaner")
-	viper.AutomaticEnv()
+	err = v.Unmarshal(&ConfigObj)
 
 	if err != nil {
 		log.Fatal(err.Error())
