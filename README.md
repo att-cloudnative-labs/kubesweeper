@@ -45,7 +45,7 @@ Please note that Kubesweeper is intended for use in lab—not production, custom
 ## Deployment as a Kubernetes CronJob
 If the desired cluster does not have Knative installed, then Kubesweeper can be installed as a Kubernetes CronJob.
 
-1. Build docker image
+1. Build Docker image
 ```bash
 $ docker build -t kubesweeper .
 ```
