@@ -1,6 +1,6 @@
 reasons:
   - reason: "CrashLoopBackOff"
-    restart_threshold: 1000
+    restart_threshold: 100
     delete_func_string: "DeleteCrash"
   - reason: "ImagePullBackOff"
     delete_func_string: "DeleteGeneric"
@@ -10,7 +10,7 @@ reasons:
     delete_func_string: "DeleteGeneric"
   - reason: "Failed"
     delete_func_string: "DeleteGeneric"
-day_limit: 30
+day_limit: 90
 delete_ingresses: true
 delete_services: true
 delete_hpas: true

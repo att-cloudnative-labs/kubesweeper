@@ -26,12 +26,13 @@ func Find(slice []string, val string) (int, bool) {
 	return -1, false
 }
 
+// Determines which delete function to use
 type DeleteFunc func(clientset *kubernetes.Clientset, deployment *v1.Deployment, restarts int, restartThreshold int) (bool, error)
 
+// Pod is in a CrashLoopBackOff state
+// Check if restart number meets or exceeds the restart threshold
+// The restart threshold will be 0 if not specified in the config, so have to handle that case
 func DeleteCrash(clientset *kubernetes.Clientset, deployment *v1.Deployment, restarts int, restartThreshold int) (bool, error) {
-	// pod is in a CrashLoopBackOff state
-	// check if restart number meets or exceeds the restart threshold
-	// the restart threshold will be 0 if not specified in the config, so have to handle that case
 	if restartThreshold > 0 && restarts >= restartThreshold {
 		return DeleteGeneric(clientset, deployment, restarts, restartThreshold)
 	} else {
@@ -41,8 +42,8 @@ func DeleteCrash(clientset *kubernetes.Clientset, deployment *v1.Deployment, res
 	}
 }
 
+// Pod is in a state defined in config.yaml
 func DeleteGeneric(clientset *kubernetes.Clientset, deployment *v1.Deployment, restarts int, restartThreshold int) (bool, error) {
-	// pod is in a state defined in config.yaml
 	policy := metav1.DeletePropagationForeground
 	gracePeriodSeconds := int64(0)
 	fmt.Printf("About to delete %s/%s and its associated resources.\n", deployment.Namespace, deployment.Name)
@@ -56,12 +57,12 @@ func DeleteGeneric(clientset *kubernetes.Clientset, deployment *v1.Deployment, r
 		fmt.Printf("%s/%s, Error: %s \n", deployment.Namespace, deployment.Name, err.Error())
 		return false, err
 	}
-
 	fmt.Printf("Deleted %s/%s and its associated resources.\n", deployment.Namespace, deployment.Name)
 
 	return true, nil
 }
 
+// Delete--if desired--Ingresses, Services, and HorizontalPodAutoscalers
 func DeleteLeftoverResources(clientset *kubernetes.Clientset, deployment *v1.Deployment) (bool, error) {
 	var kleanerConfig = ConfigObj
 
@@ -92,6 +93,7 @@ func DeleteLeftoverResources(clientset *kubernetes.Clientset, deployment *v1.Dep
 	return true, nil
 }
 
+// Delete Ingress resource associated with Deployment
 func DeleteIngress(clientset *kubernetes.Clientset, deployment *v1.Deployment) (bool, error) {
 	policy := metav1.DeletePropagationForeground
 	gracePeriodSeconds := int64(0)
@@ -107,6 +109,7 @@ func DeleteIngress(clientset *kubernetes.Clientset, deployment *v1.Deployment) (
 	return true, nil
 }
 
+// Delete Service resource associated with Deployment
 func DeleteService(clientset *kubernetes.Clientset, deployment *v1.Deployment) (bool, error) {
 	policy := metav1.DeletePropagationForeground
 	gracePeriodSeconds := int64(0)
@@ -122,6 +125,7 @@ func DeleteService(clientset *kubernetes.Clientset, deployment *v1.Deployment) (
 	return true, nil
 }
 
+// Delete HorizontalPodAutoscaler resource associated with Deployment
 func DeleteHpa(clientset *kubernetes.Clientset, deployment *v1.Deployment) (bool, error) {
 	policy := metav1.DeletePropagationForeground
 	gracePeriodSeconds := int64(0)
@@ -138,18 +142,15 @@ func DeleteHpa(clientset *kubernetes.Clientset, deployment *v1.Deployment) (bool
 }
 
 func main() {
-	// initialize the config, from yaml or environment variables
-	var kleanerConfig = ConfigObj
-	// create the map that will hold the reasons and the config object
-	var waitingReasons = make(map[string]SweeperConfigDetails)
+	var kleanerConfig = ConfigObj // initialize the config, from yaml or environment variables
 
-	// fill the map
-	for _, conf := range kleanerConfig.Reasons {
+	var waitingReasons = make(map[string]SweeperConfigDetails) // create the map that will hold the reasons and the config object
+
+	for _, conf := range kleanerConfig.Reasons { // fill the map
 		waitingReasons[conf.Reason] = conf
 	}
 
-	// fail fast if not in the cluster
-	config, err := rest.InClusterConfig()
+	config, err := rest.InClusterConfig() // fail fast if not in the cluster
 	if err != nil {
 		panic(err.Error())
 	}
@@ -161,8 +162,7 @@ func main() {
 
 	fmt.Println("Beginning the sweep.")
 
-	// get a list of pods for all namespaces
-	pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{})
+	pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{}) // get a list of pods for all namespaces
 	if err != nil {
 		panic(err.Error())
 	}
@@ -170,8 +170,7 @@ func main() {
 	for _, pod := range pods.Items {
 	StatusLoop:
 		for _, status := range pod.Status.ContainerStatuses {
-			// CHECK #1: Deployment age
-			_, found := Find(kleanerConfig.ExcludedNamespaces, pod.Namespace)
+			_, found := Find(kleanerConfig.ExcludedNamespaces, pod.Namespace) // CHECK #1: Deployment age
 			if found {
 				fmt.Println("Pod's namespace is excluded from deletion.")
 				continue
@@ -192,15 +191,11 @@ func main() {
 				fmt.Println(deploy.GetCreationTimestamp())
 				if deploy.GetCreationTimestamp().AddDate(0, 0, kleanerConfig.DayLimit).Before(time.Now()) {
 					fmt.Println("I found an old deployment past " + strconv.Itoa(kleanerConfig.DayLimit) + " days!")
-					if deploy.GetName() == "insertnamehere" {
-						_, err = DeleteGeneric(clientset, deploy, int(status.RestartCount), 0)
-					}
+					_, err = DeleteGeneric(clientset, deploy, int(status.RestartCount), 0)
 				}
 			}
 
-
-			// CHECK #2: Pod "Waiting" state
-			waiting := status.State.Waiting
+			waiting := status.State.Waiting // CHECK #2: Pod "Waiting" state
 			if waiting != nil { // There is a bad pod state
 				reason := waiting.Reason
 				if SweeperConfigDetails, ok := waitingReasons[reason]; ok {

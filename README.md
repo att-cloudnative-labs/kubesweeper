@@ -1,11 +1,11 @@
 # Kubesweeper
 
-Automatically iterates through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubesweeper will delete deployments and their associated resources if the waiting reason and/or pod restart counts dictate.
+Automatically iterates through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubesweeper will delete ```Deployments``` and their associated resources if the waiting reason and/or pod restart counts dictate. Additionally, you can use configurable Boolean environment variables to choose to delete associated ```Services```, ```Ingresses```, and ```HorizontalPodAutoscalers```. 
 
 If your lab Kubernetes clusters are filling up with non-Running pods, then Kubesweeper's automatic deletion
 can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources, such as generating reports per namespace without actually deleting. 
 
-Please note that Kubesweeper is intended for use in lab—not production, customer-facing—clusters.
+Please note that Kubesweeper is intended for use in lab—not production, customer-facing—clusters. Any automated cleanup in such an environment is unadvisable, at least for Kubesweeper.
 
 <p align="center">
   <img src="https://travis-ci.org/att-cloudnative-labs/kubesweeper.svg?branch=master">	
@@ -59,11 +59,11 @@ Note that step 2 must be run in the context of the Kubernetes cluster. After tha
 ## Deployment as a Knative CronJobSource
 If you wish to deploy Kubesweeper on Knative as a CronJobSource, you can use Helm. For information on installing Helm, please refer to the [Helm quickstart guide](https://helm.sh/docs/using_helm/). After installing Helm, the following steps can be manually run:
 
-1. Build docker image
+1. Build Docker image
 ```bash
 $ docker build -t kubesweeper .
 ```
-2. Run helm template to install Kubesweeper
+2. Run Helm template to install Kubesweeper
 ```bash
 $ helm template kubesweeper --set image=<KUBESWEEPER_IMAGE> | kubectl create -f -
 ```
@@ -84,9 +84,13 @@ Under the ```configs``` folder, the ```config.yaml``` has the following default 
   * ErrImagePull
   * Completed
   * Failed
-* Pod restart threshold
-  * 144
+* Pod restart threshold *(in other words, if pod restarts exceed this number, then delete)*
+  * 100
     * If the pod restart threshold is at least this number *and* has a pod waiting reason of ```CrashLoopBackOff```, then Kubesweeper will delete the associated resources
+* Deployment age threshold *(in other words, if the deployment creation date is before this number of days, then delete)*
+  * 90
+  
+You are able to configure these values to your choosing.
 
 Helm function configurations can be found in ```~/helm/kubesweeper/values.yaml```.
 
