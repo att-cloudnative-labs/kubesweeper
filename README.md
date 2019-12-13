@@ -68,7 +68,7 @@ $ docker build -t kubesweeper .
 $ helm template kubesweeper --set image=<KUBESWEEPER_IMAGE> | kubectl create -f -
 ```
 
-In lieu of step 2, a Makefile can be used to pull values from ./helm/kubesweeper/values.yaml:
+In lieu of step 2, a Makefile can be used to pull values from ```~/install/helm/kubesweeper/values.yaml```:
 
 ```bash
 $ make
@@ -92,7 +92,7 @@ Under the ```configs``` folder, the ```config.yaml``` has the following default 
   
 You are able to configure these values to your choosing.
 
-Helm function configurations can be found in ```~/helm/kubesweeper/values.yaml```.
+Helm function configurations can be found in ```~/install/helm/kubesweeper/values.yaml```.
 
 * name
   * Name to use for deployment
