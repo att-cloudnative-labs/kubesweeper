@@ -1,6 +1,6 @@
 # Kubesweeper
 
-Automatically iterates through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubesweeper will delete ```Deployments``` and their associated resources if the waiting reason and/or pod restart counts dictate. Additionally, you can use configurable Boolean environment variables to choose to delete associated ```Services```, ```Ingresses```, and ```HorizontalPodAutoscalers```. 
+Automatically iterates through resources in a lab Kubernetes cluster and acts according to [certain conditions outlined here](#configuration-defaults). As of now, Kubesweeper will delete ```Deployments``` and their associated resources if the waiting reason and/or pod restart count and/or deployment age dictates. Additionally, you can use configurable Boolean environment variables to choose to delete associated ```Services```, ```Ingresses```, and ```HorizontalPodAutoscalers```. 
 
 If your lab Kubernetes clusters are filling up with non-Running pods, then Kubesweeper's automatic deletion
 can assist. Future iterations of this project can involve other actions based on crawling through Kubernetes cluster resources, such as generating reports per namespace without actually deleting. 
