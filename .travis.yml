@@ -5,7 +5,7 @@ go:
 
 script:
   - env GO111MODULE=on go build
-  - ./deploy.sh
+  - chmod +x ./deploy.sh
   - docker build -t docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest .
   - docker push docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest
   - docker logout
