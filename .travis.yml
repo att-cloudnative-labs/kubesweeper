@@ -5,7 +5,12 @@ go:
 
 script:
   - env GO111MODULE=on go build
-  - chmod +x ./deploy.sh
+  - sudo apt-get install pass
+  - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz && tar -xf docker-credential-pass-v0.6.0-amd64.tar.gz && chmod +x docker-credential-pass && sudo mv docker-credential-pass /usr/local/bin/
+  - gpg2 --gen-key
+  - pass init "user"
+  - sed -i '0,/{/s/{/{\n\t"credsStore": "pass",/' ~/.docker/config.json
+  - docker login
   - docker build -t docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest .
   - docker push docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest
   - docker logout
