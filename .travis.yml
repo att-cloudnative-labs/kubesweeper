@@ -12,7 +12,7 @@ script:
   - mkdir ~/.docker
   - chmod +x ./deploy.sh
   - pass init "kubesweeper"
-  - pass insert docker-credential-helpers/docker-pass-initialized-check
+  - echo pass | pass insert docker-credential-helpers/docker-pass-initialized-check
   - docker login
   - docker build -t docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest .
   - docker push docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest
