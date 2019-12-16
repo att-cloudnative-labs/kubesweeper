@@ -5,17 +5,8 @@ go:
 
 script:
   - env GO111MODULE=on go build
-  - sudo apt-get install pass
-  - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.3/docker-credential-pass-v0.6.3-amd64.tar.gz
-  - tar xvzf docker-credential-pass-v0.6.3-amd64.tar.gz
-  - chmod a+x docker-credential-pass
-  - mkdir ~/.docker
   - chmod +x ./deploy.sh
-  - pass init "kubesweeper"
-  - echo pass is initialized | pass insert docker-credential-helpers/docker-pass-initialized-check
-  - pass show docker-credential-helpers/docker-pass-initialized-check
-  - docker-credential-pass list
-  - docker login
+  - echo "$DOCKER_PASS" | docker login docker.pkg.github.com --username "$DOCKER_USER" --password-stdin
   - docker build -t docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest .
   - docker push docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest
   - docker logout
