@@ -34,7 +34,7 @@ Expire-Date: 0
 %commit
 %echo done
 EOF
-  echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com --username "$DOCKER_USERNAME" --password-stdin
 }
 
 #--
