@@ -3,7 +3,7 @@
 set -e
 
 # init key for pass
-gpg --batch --gen-key <<-EOF ; pass init $(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1) ; sed -i '0,/{/s/{/{\n\t"credsStore": "pass",/' ~/.docker/config.json
+gpg --batch --gen-key <<-EOF ; pass init $(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
 %echo Generating a standard key
 Key-Type: DSA
 Key-Length: 1024
