@@ -3,6 +3,7 @@ addons:
   apt:
     packages:
       - pass
+      - gpg2
 
 go:
   - 1.12.x

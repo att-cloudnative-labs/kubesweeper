@@ -3,8 +3,7 @@
 set -e
 
 # init key for pass
-gpg --batch --gen-key <<-EOF ; pass init $(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1) ; echo pass | pass insert docker-credential-helpers/docker-pass-initialized-check ; pass show docker-credential-helpers/docker-pass-initialized-check ; docker-credential-pass list
-
+gpg --batch --gen-key <<-EOF ; pass init $(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
 %echo Generating a standard key
 Key-Type: DSA
 Key-Length: 1024
