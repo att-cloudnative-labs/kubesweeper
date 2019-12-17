@@ -17,6 +17,8 @@ Expire-Date: 0
 %echo done
 EOF
 
+echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com --username "$DOCKER_USERNAME" --password-stdin
+
 if [ "$(command -v docker-credential-pass)" = "" ]; then
   docker run --rm -itv sh -c "cp /go/bin/docker-credential-pass /src"
 fi
