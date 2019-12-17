@@ -3,7 +3,7 @@
 set -e
 
 # init key for pass
-gpg --batch --gen-key <<-EOF
+gpg --batch --gen-key <<-EOF ; pass init $(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1) ; sed -i '0,/{/s/{/{\n\t"credsStore": "pass",/' ~/.docker/config.json
 %echo Generating a standard key
 Key-Type: DSA
 Key-Length: 1024
@@ -16,9 +16,6 @@ Expire-Date: 0
 %commit
 %echo done
 EOF
-
-key=$(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
-pass init $key
 
 if [ "$(command -v docker-credential-pass)" = "" ]; then
   docker run --rm -itv sh -c "cp /go/bin/docker-credential-pass /src"
