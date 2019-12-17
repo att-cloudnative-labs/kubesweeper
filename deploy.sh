@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export GPG_TTY=$(tty)
+
 set -e
 
 # init key for pass
