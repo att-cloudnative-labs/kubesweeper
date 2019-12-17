@@ -19,4 +19,5 @@ Expire-Date: 0
 EOF
 
 key=$(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
+echo $key
 pass init $key
