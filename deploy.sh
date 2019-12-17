@@ -1,10 +1,9 @@
-set -ex
+#!/bin/sh
 
-sh -e /etc/init.d/xvfb start
-sleep 3 # give xvfb some time to start
+set -e
 
 # init key for pass
-gpg --batch --gen-key <<-EOF
+gpg --batch --gen-key <<-EOF ; echo $(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1) ; pass init $(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
 %echo Generating a standard key
 Key-Type: DSA
 Key-Length: 1024
@@ -18,6 +17,8 @@ Expire-Date: 0
 %echo done
 EOF
 
-key=$(gpg --no-auto-check-trustdb --list-secret-keys | grep ^sec | cut -d/ -f2 | cut -d" " -f1)
-echo $key
-pass init $key
+echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com --username "$DOCKER_USERNAME" --password-stdin
+
+if [ "$(command -v docker-credential-pass)" = "" ]; then
+  docker run --rm -itv sh -c "cp /go/bin/docker-credential-pass /src"
+fi
