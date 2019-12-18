@@ -9,9 +9,6 @@ go:
 
 script:
   - env GO111MODULE=on go build
-  - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz && tar -xf docker-credential-pass-v0.6.0-amd64.tar.gz && chmod +x docker-credential-pass && sudo mv docker-credential-pass /usr/local/bin/
-  - chmod +x ./deploy.sh
-  - ./deploy.sh
+  - echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest .
   - docker push docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest
-  - docker logout
