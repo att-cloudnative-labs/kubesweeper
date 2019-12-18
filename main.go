@@ -11,6 +11,13 @@ import (
 	"k8s.io/client-go/rest"
 )
 
+var (
+	deploymentsDeleted = 0
+	ingressesDeleted = 0
+	servicesDeleted = 0
+	hpasDeleted = 0
+)
+
 type bin int
 
 func (b bin) String() string {
@@ -52,6 +59,7 @@ func DeleteGeneric(clientset *kubernetes.Clientset, deployment *v1.Deployment, r
 		fmt.Printf("%s/%s, Error: %s \n", deployment.Namespace, deployment.Name, err.Error())
 		return false, err
 	}
+	deploymentsDeleted++
 	_, err = DeleteLeftoverResources(clientset, deployment)
 	if err != nil {
 		fmt.Printf("%s/%s, Error: %s \n", deployment.Namespace, deployment.Name, err.Error())
@@ -72,6 +80,7 @@ func DeleteLeftoverResources(clientset *kubernetes.Clientset, deployment *v1.Dep
 			fmt.Printf("%s/%s, Error calling DeleteIngress: %s \n", deployment.Namespace, deployment.Name, err.Error())
 			return false, err
 		}
+		ingressesDeleted++
 	}
 
 	if kleanerConfig.DeleteServices {
@@ -80,6 +89,7 @@ func DeleteLeftoverResources(clientset *kubernetes.Clientset, deployment *v1.Dep
 			fmt.Printf("%s/%s, Error calling DeleteService: %s \n", deployment.Namespace, deployment.Name, err.Error())
 			return false, err
 		}
+		servicesDeleted++
 	}
 
 	if kleanerConfig.DeleteHpas {
@@ -88,6 +98,7 @@ func DeleteLeftoverResources(clientset *kubernetes.Clientset, deployment *v1.Dep
 			fmt.Printf("%s/%s, Error calling DeleteHpa: %s \n", deployment.Namespace, deployment.Name, err.Error())
 			return false, err
 		}
+		hpasDeleted++
 	}
 
 	return true, nil
@@ -129,14 +140,14 @@ func DeleteService(clientset *kubernetes.Clientset, deployment *v1.Deployment) (
 func DeleteHpa(clientset *kubernetes.Clientset, deployment *v1.Deployment) (bool, error) {
 	policy := metav1.DeletePropagationForeground
 	gracePeriodSeconds := int64(0)
-	fmt.Printf("About to delete the hpa of %s/%s.\n", deployment.Namespace, deployment.Name)
+	fmt.Printf("About to delete the HPA of %s/%s.\n", deployment.Namespace, deployment.Name)
 
 	err := clientset.AutoscalingV1().HorizontalPodAutoscalers(deployment.Namespace).Delete(deployment.Name, &metav1.DeleteOptions{PropagationPolicy: &policy, GracePeriodSeconds: &gracePeriodSeconds})
 	if err != nil {
-		fmt.Printf("%s/%s, Error deleting hpa: %s \n", deployment.Namespace, deployment.Name, err.Error())
+		fmt.Printf("%s/%s, Error deleting HPA: %s \n", deployment.Namespace, deployment.Name, err.Error())
 		return false, err
 	}
-	fmt.Printf("Deleted the hpa of %s/%s.\n", deployment.Namespace, deployment.Name)
+	fmt.Printf("Deleted the HPA of %s/%s.\n", deployment.Namespace, deployment.Name)
 
 	return true, nil
 }
@@ -160,7 +171,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	fmt.Println("Beginning the sweep.")
+	fmt.Println("\n+============ Beginning the sweep. ============+")
 
 	pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{}) // get a list of pods for all namespaces
 	if err != nil {
@@ -189,7 +200,7 @@ func main() {
 			if deploy != nil && deploy.Name != "" {
 				fmt.Println(deploy.GetNamespace() + "/" + deploy.GetName())
 				fmt.Println(deploy.GetCreationTimestamp())
-				if deploy.GetCreationTimestamp().AddDate(0, 0, kleanerConfig.DayLimit).Before(time.Now()) {
+				if pod.GetCreationTimestamp().AddDate(0, 0, kleanerConfig.DayLimit).Before(time.Now()) {
 					fmt.Println("I found an old deployment past " + strconv.Itoa(kleanerConfig.DayLimit) + " days!")
 					_, err = DeleteGeneric(clientset, deploy, int(status.RestartCount), 0)
 				}
@@ -228,4 +239,14 @@ func main() {
 			}
 		}
 	}
+	fmt.Println("\n+============ KUBESWEEPER SUMMARY ============+")
+	fmt.Println("\nNumber of deployments, replica sets, and pods deleted: " + strconv.Itoa(deploymentsDeleted))
+	fmt.Println("\nNumber of ingresses deleted: " + strconv.Itoa(ingressesDeleted))
+	fmt.Println("\nNumber of services deleted: " + strconv.Itoa(servicesDeleted))
+	fmt.Println("\nNumber of HPAs deleted: " + strconv.Itoa(hpasDeleted))
+	fmt.Println("\n+==============================================+")
+	deploymentsDeleted = 0
+	ingressesDeleted = 0
+	servicesDeleted = 0
+	hpasDeleted = 0
 }
