@@ -3,6 +3,7 @@ module github.com/att-cloudnative-labs/kubesweeper
 go 1.12
 
 require (
+	github.com/docker/docker-credential-helpers v0.6.3 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect

@@ -1,13 +1,18 @@
-kleaner:
-  reasons:
-    - reason: "CrashLoopBackOff"
-      restartThreshold: 144
-      deleteFuncString: "DeleteCrash"
-    - reason: "ImagePullBackOff"
-      deleteFuncString: "DeleteGeneric"
-    - reason: "ErrImagePull"
-      deleteFuncString: "DeleteGeneric"
-    - reason: "Completed"
-      deleteFuncString: "DeleteGeneric"
-    - reason: "Failed"
-      deleteFuncString: "DeleteGeneric"
+reasons:
+  - reason: "CrashLoopBackOff"
+    restart_threshold: 100
+    delete_func_string: "DeleteCrash"
+  - reason: "ImagePullBackOff"
+    delete_func_string: "DeleteGeneric"
+  - reason: "ErrImagePull"
+    delete_func_string: "DeleteGeneric"
+  - reason: "Completed"
+    delete_func_string: "DeleteGeneric"
+  - reason: "Failed"
+    delete_func_string: "DeleteGeneric"
+day_limit: 90
+delete_ingresses: true
+delete_services: true
+delete_hpas: true
+excluded_namespaces:
+  - exclude-me

@@ -1,7 +1,14 @@
 language: go
+addons:
+  apt:
+    packages:
+      - pass
 
 go:
   - 1.12.x
 
 script:
   - env GO111MODULE=on go build
+  - echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest .
+  - docker push docker.pkg.github.com/att-cloudnative-labs/kubesweeper/kubesweeper:latest
